@@ -1,11 +1,15 @@
 package cs3560;
 
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -20,12 +24,13 @@ public class Admin { // implements singleton design pattern
         if (instance == null) {
             instance = new Admin();
         }
-
         return instance;
     }
 
-    public VBox test() {
-        TreeItem<String> rootItem = new TreeItem<>("Test");
+    public BorderPane test() {
+        BorderPane borderPane = new BorderPane();
+
+        TreeItem<String> rootItem = new TreeItem<>("Root");
         TreeItem<String> item1 = new TreeItem<>("Hello");
         TreeItem<String> item2 = new TreeItem<>("World");
         TreeItem<String> group = new TreeItem<>("List");
@@ -40,12 +45,16 @@ public class Admin { // implements singleton design pattern
 
         TreeView<String> treeView = new TreeView<>(rootItem);
 
+        TextArea textArea = new TextArea();
+        textArea.setMaxHeight(15);
+
         Button button = new Button("Click me!");
         button.setOnAction(event -> {
             try {
                 Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
                 Stage stage = new Stage();
-                stage.setTitle(treeView.getSelectionModel().getSelectedItem().getValue());
+                //stage.setTitle(treeView.getSelectionModel().getSelectedItem().getValue());
+                stage.setTitle(textArea.getText());
                 stage.setScene(new Scene(root, 450, 450));
                 stage.show();
             }
@@ -55,9 +64,15 @@ public class Admin { // implements singleton design pattern
         });
 
         VBox vbox = new VBox();
-        vbox.getChildren().add(treeView);
-        vbox.getChildren().add(button);
+        HBox hbox = new HBox();
+        hbox.getChildren().add(textArea);
+        hbox.getChildren().add(button);
+        vbox.getChildren().add(hbox);
+        vbox.setPadding(new Insets(10, 10, 10, 10));
 
-        return vbox;
+        borderPane.setLeft(treeView);
+        borderPane.setCenter(vbox);
+
+        return borderPane;
     }
 }

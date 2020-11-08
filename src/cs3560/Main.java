@@ -4,8 +4,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -16,8 +14,7 @@ public class Main extends Application {
         primaryStage.setTitle("Hello World");
 
         Admin admin = Admin.getInstance();
-
-        primaryStage.setScene(new Scene(admin.test(), 300, 275));
+        primaryStage.setScene(new Scene(admin.test(), 750, 500));
         primaryStage.show();
     }
 
