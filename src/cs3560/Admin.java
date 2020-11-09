@@ -8,13 +8,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import sun.reflect.generics.tree.Tree;
 
 public class Admin { // implements singleton design pattern
     private static Admin instance = null;
     private final Node rootIcon = new ImageView(new Image("file:./src/icon.png"));
 
-    private Admin() {}
+    private Admin() {
+    }
 
     public static Admin getInstance() { // only creates instance if doesn't exist
         if (instance == null) {
@@ -41,7 +41,37 @@ public class Admin { // implements singleton design pattern
 
         Button userButton = new Button("Add User");
         userButton.setOnAction(event -> {
-
+            Alert alert;
+            if (treeView.getSelectionModel().getSelectedItem() == null) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please select a group.");
+                alert.show();
+            }
+            else if (userText.getText().equals("")) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please enter an id.");
+                alert.show();
+            }
+            else {
+                if (treeView.getSelectionModel().getSelectedItem().getValue().equals("Root")) {
+                    TreeItem<String> treeItem = new TreeItem<>(userText.getText());
+                    treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
+                    treeView.getSelectionModel().getSelectedItem().setExpanded(true);
+                    rootGroup.addUser(userText.getText());
+                }
+                else {
+                    TreeEntry entry = findGroup(treeView, rootGroup);
+                    if (entry != null) {
+                        TreeItem<String> treeItem = new TreeItem<>(userText.getText());
+                        treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
+                        treeView.getSelectionModel().getSelectedItem().setExpanded(true);
+                        ((UserGroup) entry).addUser(userText.getText());
+                    }
+                    else {
+                        alert = new Alert(Alert.AlertType.ERROR, "Please select a group.");
+                        alert.show();
+                    }
+                }
+            }
+            userText.clear();
         });
 
         Button groupButton = new Button("Add Group");
@@ -63,7 +93,17 @@ public class Admin { // implements singleton design pattern
                     rootGroup.addUserGroup(groupText.getText());
                 }
                 else {
-                    findItem(treeView, rootGroup, groupText);
+                    TreeEntry entry = findGroup(treeView, rootGroup);
+                    if (entry != null) {
+                        TreeItem<String> treeItem = new TreeItem<>(groupText.getText(), rootIcon);
+                        treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
+                        treeView.getSelectionModel().getSelectedItem().setExpanded(true);
+                        ((UserGroup) entry).addUserGroup(groupText.getText());
+                    }
+                    else {
+                        alert = new Alert(Alert.AlertType.ERROR, "Please select a group.");
+                        alert.show();
+                    }
                 }
                 groupText.clear();
             }
@@ -89,22 +129,21 @@ public class Admin { // implements singleton design pattern
         return borderPane;
     }
 
-    private void findItem(TreeView<String> treeView, TreeEntry entry, TextArea text) {
-            for (TreeEntry t : ((UserGroup) entry).getList()) {
-                if (t instanceof UserGroup) {
-                    if (treeView.getSelectionModel().getSelectedItem().getValue().equals(t.getId())) {
-                        TreeItem<String> treeItem = new TreeItem<>(text.getText(), rootIcon);
-                        treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
-                        treeView.getSelectionModel().getSelectedItem().setExpanded(true);
-                        ((UserGroup) t).addUserGroup(text.getText());
-                    }
-                    else {
-                        findItem(treeView, t, text);
-                    }
+    private TreeEntry findGroup(TreeView<String> treeView, TreeEntry entry) {
+        for (TreeEntry t : ((UserGroup) entry).getList()) {
+            if (t instanceof UserGroup) {
+                if (treeView.getSelectionModel().getSelectedItem().getValue().equals(t.getId())) {
+                    return t;
+                }
+                else {
+                    findGroup(treeView, t);
                 }
             }
+        }
+        return null;
     }
 }
+
 
 /*try {
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
