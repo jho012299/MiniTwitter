@@ -14,7 +14,7 @@ public class Main extends Application {
         primaryStage.setTitle("Hello World");
 
         Admin admin = Admin.getInstance();
-        primaryStage.setScene(new Scene(admin.test(), 750, 500));
+        primaryStage.setScene(new Scene(admin.showUI(), 750, 500));
         primaryStage.show();
     }
 

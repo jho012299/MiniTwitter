@@ -1,8 +1,6 @@
 package cs3560;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class User implements TreeEntry{
     private String id;
@@ -25,4 +23,6 @@ public class User implements TreeEntry{
     public String getId() {
         return id;
     }
+
+    //update following view + update feed
 }

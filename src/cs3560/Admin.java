@@ -1,22 +1,18 @@
 package cs3560;
 
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 
 public class Admin { // implements singleton design pattern
     private static Admin instance = null;
+    private final Node rootIcon = new ImageView(new Image("file:./src/icon.png"));
 
     private Admin() {}
 
@@ -27,48 +23,59 @@ public class Admin { // implements singleton design pattern
         return instance;
     }
 
-    public BorderPane test() {
+    public BorderPane showUI() {
         BorderPane borderPane = new BorderPane();
 
-        TreeItem<String> rootItem = new TreeItem<>("Root");
-        TreeItem<String> item1 = new TreeItem<>("Hello");
-        TreeItem<String> item2 = new TreeItem<>("World");
-        TreeItem<String> group = new TreeItem<>("List");
-        TreeItem<String> groupItem1 = new TreeItem<>("Milk");
-        TreeItem<String> groupItem2 = new TreeItem<>("Eggs");
+        TreeItem<String> rootItem = new TreeItem<>("Root", rootIcon);
 
-        rootItem.getChildren().add(item1);
-        item1.getChildren().add(group);
-        item1.getChildren().add(item2);
-        group.getChildren().add(groupItem1);
-        group.getChildren().add(groupItem2);
 
         TreeView<String> treeView = new TreeView<>(rootItem);
 
-        TextArea textArea = new TextArea();
-        textArea.setMaxHeight(15);
+        TextArea userText = new TextArea();
+        userText.setMaxHeight(15);
+        userText.setMaxWidth(250);
 
-        Button button = new Button("Click me!");
-        button.setOnAction(event -> {
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-                Stage stage = new Stage();
-                //stage.setTitle(treeView.getSelectionModel().getSelectedItem().getValue());
-                stage.setTitle(textArea.getText());
-                stage.setScene(new Scene(root, 450, 450));
-                stage.show();
+        TextArea groupText = new TextArea();
+        groupText.setMaxHeight(15);
+        groupText.setMaxWidth(250);
+
+        Button userButton = new Button("Add User");
+        userButton.setOnAction(event -> {
+
+        });
+
+        Button groupButton = new Button("Add Group");
+        groupButton.setOnAction(event -> {
+            Alert alert;
+            if (treeView.getSelectionModel().getSelectedItem() == null) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please select a group.");
+                alert.show();
             }
-            catch (IOException e) {
-                e.printStackTrace();
+            else if (groupText.getText().equals("")) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please enter a user id.");
+                alert.show();
+            }
+            else { //TODO:prevent users from creating same id
+                TreeItem<String> treeItem = new TreeItem<>(groupText.getText(), rootIcon);
+                treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
+                treeView.getSelectionModel().getSelectedItem().setExpanded(true);
+                groupText.clear();
             }
         });
 
         VBox vbox = new VBox();
-        HBox hbox = new HBox();
-        hbox.getChildren().add(textArea);
-        hbox.getChildren().add(button);
-        vbox.getChildren().add(hbox);
+        HBox userBox = new HBox();
+        HBox groupBox = new HBox();
+        userBox.getChildren().add(userText);
+        userBox.getChildren().add(userButton);
+        groupBox.getChildren().add(groupText);
+        groupBox.getChildren().add(groupButton);
+        vbox.getChildren().add(userBox);
+        vbox.getChildren().add(groupBox);
+
         vbox.setPadding(new Insets(10, 10, 10, 10));
+        userBox.setPadding(new Insets(10, 10, 10, 10));
+        groupBox.setPadding(new Insets(10, 10, 10, 10));
 
         borderPane.setLeft(treeView);
         borderPane.setCenter(vbox);
@@ -76,3 +83,21 @@ public class Admin { // implements singleton design pattern
         return borderPane;
     }
 }
+
+/*try {
+        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        Stage stage = new Stage();
+        //stage.setTitle(treeView.getSelectionModel().getSelectedItem().getValue());
+        //stage.setTitle(textArea.getText());
+        TreeEntry user = new User(userText.getText());
+        TreeEntry userGroup = new UserGroup("hello");
+
+        //treeView.getSelectionModel().getSelectedItem();
+        // TODO: maybe use isLeaf()?
+
+        stage.setScene(new Scene(root, 450, 450));
+        stage.show();
+        }
+        catch (IOException e) {
+        e.printStackTrace();
+        */
