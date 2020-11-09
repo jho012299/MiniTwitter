@@ -8,7 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
+import sun.reflect.generics.tree.Tree;
 
 public class Admin { // implements singleton design pattern
     private static Admin instance = null;
@@ -27,7 +27,7 @@ public class Admin { // implements singleton design pattern
         BorderPane borderPane = new BorderPane();
 
         TreeItem<String> rootItem = new TreeItem<>("Root", rootIcon);
-
+        UserGroup rootGroup = new UserGroup("Root");
 
         TreeView<String> treeView = new TreeView<>(rootItem);
 
@@ -52,13 +52,19 @@ public class Admin { // implements singleton design pattern
                 alert.show();
             }
             else if (groupText.getText().equals("")) {
-                alert = new Alert(Alert.AlertType.ERROR, "Please enter a user id.");
+                alert = new Alert(Alert.AlertType.ERROR, "Please enter an id.");
                 alert.show();
             }
             else { //TODO:prevent users from creating same id
-                TreeItem<String> treeItem = new TreeItem<>(groupText.getText(), rootIcon);
-                treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
-                treeView.getSelectionModel().getSelectedItem().setExpanded(true);
+                if (treeView.getSelectionModel().getSelectedItem().getValue().equals("Root")) {
+                    TreeItem<String> treeItem = new TreeItem<>(groupText.getText(), rootIcon);
+                    treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
+                    treeView.getSelectionModel().getSelectedItem().setExpanded(true);
+                    rootGroup.addUserGroup(groupText.getText());
+                }
+                else {
+                    findItem(treeView, rootGroup, groupText);
+                }
                 groupText.clear();
             }
         });
@@ -82,6 +88,22 @@ public class Admin { // implements singleton design pattern
 
         return borderPane;
     }
+
+    private void findItem(TreeView<String> treeView, TreeEntry entry, TextArea text) {
+            for (TreeEntry t : ((UserGroup) entry).getList()) {
+                if (t instanceof UserGroup) {
+                    if (treeView.getSelectionModel().getSelectedItem().getValue().equals(t.getId())) {
+                        TreeItem<String> treeItem = new TreeItem<>(text.getText(), rootIcon);
+                        treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
+                        treeView.getSelectionModel().getSelectedItem().setExpanded(true);
+                        ((UserGroup) t).addUserGroup(text.getText());
+                    }
+                    else {
+                        findItem(treeView, t, text);
+                    }
+                }
+            }
+    }
 }
 
 /*try {
@@ -100,4 +122,16 @@ public class Admin { // implements singleton design pattern
         }
         catch (IOException e) {
         e.printStackTrace();
-        */
+
+        For x in all users in root :
+      If x is GROUP_TO_ADD_TO:
+          Add as a tree item
+       else If x is a usergroup :
+              for y in all users in x:
+                    If y is GROUP_TO_ADD_TO:
+                        Add as a tree item
+                   else If y is a user group:
+                         for z in all users in y:
+                               ....
+
+ */

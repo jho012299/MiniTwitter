@@ -1,5 +1,6 @@
 package cs3560;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserGroup implements TreeEntry{
@@ -8,10 +9,15 @@ public class UserGroup implements TreeEntry{
 
     public UserGroup(String id) {
         this.id = id;
+        entries = new ArrayList<>();
     }
 
     public String getId() {
         return id;
+    }
+
+    public List<TreeEntry> getList() {
+        return entries;
     }
 
     public void addUser(String id) {
@@ -22,4 +28,8 @@ public class UserGroup implements TreeEntry{
         entries.add(new UserGroup(id));
     }
 
+    @Override
+    public String toString() {
+        return id;
+    }
 }

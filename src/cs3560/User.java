@@ -1,5 +1,6 @@
 package cs3560;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User implements TreeEntry{
@@ -10,6 +11,9 @@ public class User implements TreeEntry{
 
     public User(String id) {
         this.id = id;
+        followers = new ArrayList<>();
+        following = new ArrayList<>();
+        feed = new ArrayList<>();
     }
 
     public void follow(String id) {
@@ -21,6 +25,11 @@ public class User implements TreeEntry{
     }
 
     public String getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
         return id;
     }
 
