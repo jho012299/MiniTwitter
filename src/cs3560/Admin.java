@@ -8,7 +8,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import sun.reflect.generics.tree.Tree;
 
 public class Admin { // implements singleton design pattern
     private static Admin instance = null;
