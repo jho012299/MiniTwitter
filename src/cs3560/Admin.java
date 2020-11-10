@@ -41,7 +41,27 @@ public class Admin { // implements singleton design pattern
 
         Button userButton = new Button("Add User");
         userButton.setOnAction(event -> {
-
+            Alert alert;
+            if (treeView.getSelectionModel().getSelectedItem() == null) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please select a group.");
+                alert.show();
+            }
+            else if (userText.getText().equals("")) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please enter an id.");
+                alert.show();
+            }
+            else { //TODO:prevent users from creating same id
+                if (treeView.getSelectionModel().getSelectedItem().getValue().equals("Root")) {
+                    TreeItem<String> treeItem = new TreeItem<>(userText.getText());
+                    treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
+                    treeView.getSelectionModel().getSelectedItem().setExpanded(true);
+                    rootGroup.addUser(userText.getText());
+                }
+                else {
+                    findForUser(treeView, rootGroup, userText);
+                }
+                userText.clear();
+            }
         });
 
         Button groupButton = new Button("Add Group");
@@ -63,7 +83,7 @@ public class Admin { // implements singleton design pattern
                     rootGroup.addUserGroup(groupText.getText());
                 }
                 else {
-                    findItem(treeView, rootGroup, groupText);
+                    findForGroup(treeView, rootGroup, groupText);
                 }
                 groupText.clear();
             }
@@ -89,7 +109,23 @@ public class Admin { // implements singleton design pattern
         return borderPane;
     }
 
-    private void findItem(TreeView<String> treeView, TreeEntry entry, TextArea text) {
+    private void findForUser(TreeView<String> treeView, TreeEntry entry, TextArea text) {
+        for (TreeEntry t : ((UserGroup) entry).getList()) {
+            if (t instanceof UserGroup) {
+                if (treeView.getSelectionModel().getSelectedItem().getValue().equals(t.getId())) {
+                    TreeItem<String> treeItem = new TreeItem<>(text.getText());
+                    treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
+                    treeView.getSelectionModel().getSelectedItem().setExpanded(true);
+                    ((UserGroup) t).addUser(text.getText());
+                }
+                else {
+                    findForUser(treeView, t, text);
+                }
+            }
+        }
+    }
+
+    private void findForGroup(TreeView<String> treeView, TreeEntry entry, TextArea text) {
             for (TreeEntry t : ((UserGroup) entry).getList()) {
                 if (t instanceof UserGroup) {
                     if (treeView.getSelectionModel().getSelectedItem().getValue().equals(t.getId())) {
@@ -99,7 +135,7 @@ public class Admin { // implements singleton design pattern
                         ((UserGroup) t).addUserGroup(text.getText());
                     }
                     else {
-                        findItem(treeView, t, text);
+                        findForGroup(treeView, t, text);
                     }
                 }
             }
