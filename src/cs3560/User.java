@@ -33,5 +33,9 @@ public class User implements TreeEntry{
         return id;
     }
 
+    public void accept(StatsElementVisitor visitor) {
+        visitor.visitUser(this);
+    }
+
     //update following view + update feed
 }

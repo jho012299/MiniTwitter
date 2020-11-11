@@ -28,8 +28,7 @@ public class UserGroup implements TreeEntry{
         entries.add(new UserGroup(id));
     }
 
-    @Override
-    public String toString() {
-        return id;
+    public void accept(StatsElementVisitor visitor) {
+        visitor.visitGroup(this);
     }
 }

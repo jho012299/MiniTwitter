@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
 
 public class Admin { // implements singleton design pattern
     private static Admin instance = null;
-    private final Node rootIcon = new ImageView(new Image("file:./src/icon.png"));
+    private Image groupIcon = new Image("file:./src/icon.png");
 
     private Admin() {}
 
@@ -25,7 +25,7 @@ public class Admin { // implements singleton design pattern
     public BorderPane showUI() {
         BorderPane borderPane = new BorderPane();
 
-        TreeItem<String> rootItem = new TreeItem<>("Root", rootIcon);
+        TreeItem<String> rootItem = new TreeItem<>("Root", new ImageView(groupIcon));
         UserGroup rootGroup = new UserGroup("Root");
 
         TreeView<String> treeView = new TreeView<>(rootItem);
@@ -76,7 +76,7 @@ public class Admin { // implements singleton design pattern
             }
             else { //TODO:prevent users from creating same id
                 if (treeView.getSelectionModel().getSelectedItem().getValue().equals("Root")) {
-                    TreeItem<String> treeItem = new TreeItem<>(groupText.getText(), rootIcon);
+                    TreeItem<String> treeItem = new TreeItem<>(groupText.getText(), new ImageView(groupIcon));
                     treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
                     treeView.getSelectionModel().getSelectedItem().setExpanded(true);
                     rootGroup.addUserGroup(groupText.getText());
@@ -88,15 +88,45 @@ public class Admin { // implements singleton design pattern
             }
         });
 
+        Button userViewButton = new Button("Open User View");
+        userViewButton.setOnAction(event -> {
+
+        });
+
+        Button showUserTotal = new Button("Show User Total");
+        showUserTotal.setOnAction(event -> {
+            UserTotal visitor = new UserTotal();
+            rootGroup.accept(visitor);
+            System.out.println(visitor.getCount());
+        });
+
+        Button showGroupTotal = new Button("Show Group Total");
+        showGroupTotal.setOnAction(event -> {
+
+        });
+
+        Button showMessageTotal = new Button("Show Messages Total");
+        showMessageTotal.setOnAction(event -> {
+
+        });
+
+        Button showPositivePercentage = new Button("Show Positive Percentage");
+        showPositivePercentage.setOnAction(event -> {
+
+        });
+
         VBox vbox = new VBox();
         HBox userBox = new HBox();
         HBox groupBox = new HBox();
+        HBox totalBox = new HBox();
         userBox.getChildren().add(userText);
         userBox.getChildren().add(userButton);
         groupBox.getChildren().add(groupText);
         groupBox.getChildren().add(groupButton);
+        totalBox.getChildren().add(showUserTotal);
         vbox.getChildren().add(userBox);
         vbox.getChildren().add(groupBox);
+        vbox.getChildren().add(totalBox);
 
         vbox.setPadding(new Insets(10, 10, 10, 10));
         userBox.setPadding(new Insets(10, 10, 10, 10));
@@ -128,7 +158,7 @@ public class Admin { // implements singleton design pattern
             for (TreeEntry t : ((UserGroup) entry).getList()) {
                 if (t instanceof UserGroup) {
                     if (treeView.getSelectionModel().getSelectedItem().getValue().equals(t.getId())) {
-                        TreeItem<String> treeItem = new TreeItem<>(text.getText(), rootIcon);
+                        TreeItem<String> treeItem = new TreeItem<>(text.getText(), new ImageView(groupIcon));
                         treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
                         treeView.getSelectionModel().getSelectedItem().setExpanded(true);
                         ((UserGroup) t).addUserGroup(text.getText());

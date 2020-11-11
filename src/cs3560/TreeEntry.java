@@ -1,7 +1,5 @@
 package cs3560;
 
-public interface TreeEntry {
+public interface TreeEntry extends StatsElement{
     public String getId();
-
-    public String toString();
 }

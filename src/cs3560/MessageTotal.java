@@ -1,10 +1,16 @@
 package cs3560;
 
-public class MessageTotal implements StatsElement {
+public class MessageTotal implements StatsElementVisitor {
     public MessageTotal(){}
 
+
     @Override
-    public void accept(StatsElementVisitor visitor) {
-        visitor.visitMessageTotal(this);
+    public void visitUser(User user) {
+
+    }
+
+    @Override
+    public void visitGroup(UserGroup userGroup) {
+
     }
 }
