@@ -1,11 +1,13 @@
 package Main;
 
+import Observer.Observer;
+import Observer.Subject;
 import Visitor.StatsElementVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class User implements TreeEntry{
+public class User extends Subject implements TreeEntry, Observer {
     private String id;
     private List<String> followers;
     private List<String> following;
@@ -19,10 +21,12 @@ public class User implements TreeEntry{
     }
 
     public void follow(String id) {
+        // attach
         following.add(id);
     }
 
     public String post(String message) {
+        notifyObservers();
         return "";
     }
 
@@ -39,5 +43,7 @@ public class User implements TreeEntry{
         visitor.visitUser(this);
     }
 
-    //update following view + update feed
+    public void update(Subject subject) {
+
+    }
 }

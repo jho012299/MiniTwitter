@@ -3,6 +3,7 @@ package Main;
 import Visitor.GroupTotal;
 import Visitor.UserTotal;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,6 +14,7 @@ import javafx.scene.layout.VBox;
 public class Admin { // implements singleton design pattern
     private static Admin instance = null;
     private Image groupIcon = new Image("file:./src/icon.png");
+    private Alert alert;
 
     private Admin() {}
 
@@ -41,7 +43,6 @@ public class Admin { // implements singleton design pattern
 
         Button userButton = new Button("Add User");
         userButton.setOnAction(event -> {
-            Alert alert;
             if (treeView.getSelectionModel().getSelectedItem() == null) {
                 alert = new Alert(Alert.AlertType.ERROR, "Please select a group.");
                 alert.show();
@@ -66,7 +67,6 @@ public class Admin { // implements singleton design pattern
 
         Button groupButton = new Button("Add Group");
         groupButton.setOnAction(event -> {
-            Alert alert;
             if (treeView.getSelectionModel().getSelectedItem() == null) {
                 alert = new Alert(Alert.AlertType.ERROR, "Please select a group.");
                 alert.show();
@@ -89,23 +89,33 @@ public class Admin { // implements singleton design pattern
             }
         });
 
-        Button userViewButton = new Button("Open User View");
+        Button userViewButton = new Button("Open User View"); //TODO: checkUnique()
         userViewButton.setOnAction(event -> {
-
+            String selected = treeView.getSelectionModel().getSelectedItem().getValue();
+            if (treeView.getSelectionModel().getSelectedItem() == null || !checkUser(rootGroup, selected)) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please select a user.");
+                alert.show();
+            }
         });
 
         Button showUserTotal = new Button("Show User Total");
         showUserTotal.setOnAction(event -> {
             UserTotal visitor = new UserTotal();
             rootGroup.accept(visitor);
-            System.out.println(visitor.getCount());
+            alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + visitor.getCount() + " registered users.");
+            alert.setTitle("Mini Twitter");
+            alert.setHeaderText("Number of Users");
+            alert.show();
         });
 
         Button showGroupTotal = new Button("Show Group Total");
         showGroupTotal.setOnAction(event -> {
             GroupTotal visitor = new GroupTotal();
             rootGroup.accept(visitor);
-            System.out.println(visitor.getCount());
+            alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + visitor.getCount() + " user group(s).");
+            alert.setTitle("Mini Twitter");
+            alert.setHeaderText("Number of Groups");
+            alert.show();
         });
 
         Button showMessageTotal = new Button("Show Messages Total");
@@ -121,15 +131,18 @@ public class Admin { // implements singleton design pattern
         VBox vbox = new VBox();
         HBox userBox = new HBox();
         HBox groupBox = new HBox();
+        HBox viewBox = new HBox();
         HBox totalBox = new HBox();
         userBox.getChildren().add(userText);
         userBox.getChildren().add(userButton);
         groupBox.getChildren().add(groupText);
         groupBox.getChildren().add(groupButton);
+        viewBox.getChildren().add(userViewButton);
         totalBox.getChildren().add(showUserTotal);
         totalBox.getChildren().add(showGroupTotal);
         vbox.getChildren().add(userBox);
         vbox.getChildren().add(groupBox);
+        vbox.getChildren().add(viewBox);
         vbox.getChildren().add(totalBox);
 
         vbox.setPadding(new Insets(10, 10, 10, 10));
@@ -174,6 +187,21 @@ public class Admin { // implements singleton design pattern
                     }
                 }
             }
+    }
+
+    private boolean checkUser(TreeEntry entry, String id) {
+       if (entry.getId().equals(id)) {
+           return entry instanceof User;
+       }
+
+       if (entry instanceof UserGroup) {
+           for (TreeEntry t : ((UserGroup) entry).getList()) {
+               if (checkUser(t, id)) {
+                   return true;
+               }
+           }
+       }
+       return false;
     }
 }
 
