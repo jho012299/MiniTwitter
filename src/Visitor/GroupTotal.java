@@ -1,34 +1,33 @@
-package cs3560;
+package Visitor;
 
-import javafx.scene.control.Button;
+import Main.TreeEntry;
+import Main.User;
+import Main.UserGroup;
 
 import java.util.List;
 
-public class UserTotal implements StatsElementVisitor {
-    private Button button;
+public class GroupTotal implements StatsElementVisitor {
     private int count;
 
-    public UserTotal() {
-        button = new Button("Show User Total");
+    public GroupTotal(){
         count = 0;
     }
 
     @Override
     public void visitUser(User user) {
-        count++;
+
     }
 
     @Override
     public void visitGroup(UserGroup userGroup) {
         List<TreeEntry> list = userGroup.getList();
         for (TreeEntry t : list) {
-            if (t instanceof User) {
-               visitUser((User) t);
-            }
-            else if (t instanceof UserGroup) {
+            if (t instanceof UserGroup) {
+                count++;
                 t.accept(this);
             }
         }
+
     }
 
     public int getCount() {

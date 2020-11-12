@@ -1,4 +1,7 @@
-package cs3560;
+package Visitor;
+
+import Main.User;
+import Main.UserGroup;
 
 public interface StatsElementVisitor {
     public void visitUser(User user);

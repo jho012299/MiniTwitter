@@ -1,4 +1,6 @@
-package cs3560;
+package Visitor;
+
+import Visitor.StatsElementVisitor;
 
 public interface StatsElement {
     public void accept(StatsElementVisitor visitor);

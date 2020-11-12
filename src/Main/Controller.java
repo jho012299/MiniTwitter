@@ -1,4 +1,4 @@
-package cs3560;
+package Main;
 
 public class Controller {
 }

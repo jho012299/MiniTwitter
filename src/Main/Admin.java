@@ -1,7 +1,8 @@
-package cs3560;
+package Main;
 
+import Visitor.GroupTotal;
+import Visitor.UserTotal;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -102,7 +103,9 @@ public class Admin { // implements singleton design pattern
 
         Button showGroupTotal = new Button("Show Group Total");
         showGroupTotal.setOnAction(event -> {
-
+            GroupTotal visitor = new GroupTotal();
+            rootGroup.accept(visitor);
+            System.out.println(visitor.getCount());
         });
 
         Button showMessageTotal = new Button("Show Messages Total");
@@ -124,6 +127,7 @@ public class Admin { // implements singleton design pattern
         groupBox.getChildren().add(groupText);
         groupBox.getChildren().add(groupButton);
         totalBox.getChildren().add(showUserTotal);
+        totalBox.getChildren().add(showGroupTotal);
         vbox.getChildren().add(userBox);
         vbox.getChildren().add(groupBox);
         vbox.getChildren().add(totalBox);
@@ -146,6 +150,7 @@ public class Admin { // implements singleton design pattern
                     treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
                     treeView.getSelectionModel().getSelectedItem().setExpanded(true);
                     ((UserGroup) t).addUser(text.getText());
+                    break;
                 }
                 else {
                     findForUser(treeView, t, text);
@@ -162,6 +167,7 @@ public class Admin { // implements singleton design pattern
                         treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
                         treeView.getSelectionModel().getSelectedItem().setExpanded(true);
                         ((UserGroup) t).addUserGroup(text.getText());
+                        break;
                     }
                     else {
                         findForGroup(treeView, t, text);
