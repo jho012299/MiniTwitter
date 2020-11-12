@@ -1,6 +1,7 @@
 package Main;
 
 import Visitor.GroupTotal;
+import Visitor.MessageTotal;
 import Visitor.UserTotal;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -100,9 +101,8 @@ public class Admin { // implements singleton design pattern
 
         Button showUserTotal = new Button("Show User Total");
         showUserTotal.setOnAction(event -> {
-            UserTotal visitor = new UserTotal();
-            rootGroup.accept(visitor);
-            alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + visitor.getCount() + " registered users.");
+            int count = getUserCount(rootGroup);
+            alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " registered users.");
             alert.setTitle("Mini Twitter");
             alert.setHeaderText("Number of Users");
             alert.show();
@@ -110,9 +110,8 @@ public class Admin { // implements singleton design pattern
 
         Button showGroupTotal = new Button("Show Group Total");
         showGroupTotal.setOnAction(event -> {
-            GroupTotal visitor = new GroupTotal();
-            rootGroup.accept(visitor);
-            alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + visitor.getCount() + " user group(s).");
+            int count = getGroupCount(rootGroup);
+            alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " user group(s).");
             alert.setTitle("Mini Twitter");
             alert.setHeaderText("Number of Groups");
             alert.show();
@@ -120,12 +119,16 @@ public class Admin { // implements singleton design pattern
 
         Button showMessageTotal = new Button("Show Messages Total");
         showMessageTotal.setOnAction(event -> {
-
+            MessageTotal visitor = new MessageTotal();
+            int count = 0;
+            for (TreeEntry t : rootGroup.getList()) {
+                count +=  t.accept(visitor);
+            }
         });
 
         Button showPositivePercentage = new Button("Show Positive Percentage");
         showPositivePercentage.setOnAction(event -> {
-
+            // make MessageTotalVisitor and PositiveTotalVisitor and divide the counts
         });
 
         VBox vbox = new VBox();
@@ -202,6 +205,30 @@ public class Admin { // implements singleton design pattern
            }
        }
        return false;
+    }
+
+    private int getUserCount(TreeEntry entry) {
+        int count = 0;
+        UserTotal visitor = new UserTotal();
+        for (TreeEntry t : ((UserGroup)entry).getList()) {
+            if (t instanceof UserGroup) {
+                count += getUserCount(t);
+            }
+            count += t.accept(visitor);
+        }
+        return count;
+    }
+
+    private int getGroupCount(TreeEntry entry) {
+        int count = 0;
+        GroupTotal visitor = new GroupTotal();
+        for (TreeEntry t : ((UserGroup)entry).getList()) {
+            if (t instanceof UserGroup) {
+                count += getGroupCount(t);
+            }
+            count += t.accept(visitor);
+        }
+        return count;
     }
 }
 

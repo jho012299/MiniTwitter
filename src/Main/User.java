@@ -39,8 +39,12 @@ public class User extends Subject implements TreeEntry, Observer {
         return id;
     }
 
-    public void accept(StatsElementVisitor visitor) {
-        visitor.visitUser(this);
+    public List<String> getFeed() {
+        return feed;
+    }
+
+    public int accept(StatsElementVisitor visitor) {
+        return visitor.visit(this);
     }
 
     public void update(Subject subject) {

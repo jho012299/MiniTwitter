@@ -1,5 +1,4 @@
 package Visitor;
-
 import Main.User;
 import Main.UserGroup;
 
@@ -8,12 +7,12 @@ public class MessageTotal implements StatsElementVisitor {
 
 
     @Override
-    public void visitUser(User user) {
-
+    public int visit(User user) {
+        return user.getFeed().size();
     }
 
     @Override
-    public void visitGroup(UserGroup userGroup) {
-
+    public int visit(UserGroup userGroup) {
+        return 0;
     }
 }

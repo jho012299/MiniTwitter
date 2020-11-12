@@ -30,7 +30,7 @@ public class UserGroup implements TreeEntry{
         entries.add(new UserGroup(id));
     }
 
-    public void accept(StatsElementVisitor visitor) {
-        visitor.visitGroup(this);
+    public int accept(StatsElementVisitor visitor) {
+        return visitor.visit(this);
     }
 }

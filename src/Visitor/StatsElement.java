@@ -1,7 +1,5 @@
 package Visitor;
 
-import Visitor.StatsElementVisitor;
-
 public interface StatsElement {
-    public void accept(StatsElementVisitor visitor);
+    public int accept(StatsElementVisitor visitor);
 }

@@ -7,31 +7,16 @@ import Main.UserGroup;
 import java.util.List;
 
 public class UserTotal implements StatsElementVisitor {
-    private int count;
 
-    public UserTotal() {
-        count = 0;
+    public UserTotal() {}
+
+    @Override
+    public int visit(User user) {
+        return 1;
     }
 
     @Override
-    public void visitUser(User user) {
-        count++;
-    }
-
-    @Override
-    public void visitGroup(UserGroup userGroup) {
-        List<TreeEntry> list = userGroup.getList();
-        for (TreeEntry t : list) {
-            if (t instanceof User) {
-                visitUser((User) t);
-            }
-            else if (t instanceof UserGroup) {
-                t.accept(this);
-            }
-        }
-    }
-
-    public int getCount() {
-        return count;
+    public int visit(UserGroup userGroup) {
+        return 0;
     }
 }

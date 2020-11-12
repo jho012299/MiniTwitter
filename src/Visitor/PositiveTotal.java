@@ -7,12 +7,12 @@ public class PositiveTotal implements StatsElementVisitor {
     public PositiveTotal(){}
 
     @Override
-    public void visitUser(User user) {
-
+    public int visit(User user) {
+        return 0;
     }
 
     @Override
-    public void visitGroup(UserGroup userGroup) {
-
+    public int visit(UserGroup userGroup) {
+        return 0;
     }
 }
