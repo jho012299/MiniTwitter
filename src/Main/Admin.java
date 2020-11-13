@@ -4,7 +4,6 @@ import Visitor.GroupTotal;
 import Visitor.MessageTotal;
 import Visitor.UserTotal;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -34,13 +33,13 @@ public class Admin { // implements singleton design pattern
 
         TreeView<String> treeView = new TreeView<>(rootItem);
 
-        TextArea userText = new TextArea();
-        userText.setMaxHeight(15);
-        userText.setMaxWidth(250);
+        TextField userText = new TextField();
+        //userText.setMaxHeight(15);
+        //userText.setMaxWidth(250);
 
-        TextArea groupText = new TextArea();
-        groupText.setMaxHeight(15);
-        groupText.setMaxWidth(250);
+        TextField groupText = new TextField();
+        //groupText.setMaxHeight(15);
+        //groupText.setMaxWidth(250);
 
         Button userButton = new Button("Add User");
         userButton.setOnAction(event -> {
@@ -52,7 +51,11 @@ public class Admin { // implements singleton design pattern
                 alert = new Alert(Alert.AlertType.ERROR, "Please enter an id.");
                 alert.show();
             }
-            else { //TODO:prevent users from creating same id
+            else if (!checkUnique(rootGroup, userText.getText()) || userText.getText().equals("Root")) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please enter a unique id.");
+                alert.show();
+            }
+            else {
                 if (treeView.getSelectionModel().getSelectedItem().getValue().equals("Root")) {
                     TreeItem<String> treeItem = new TreeItem<>(userText.getText());
                     treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
@@ -76,7 +79,11 @@ public class Admin { // implements singleton design pattern
                 alert = new Alert(Alert.AlertType.ERROR, "Please enter an id.");
                 alert.show();
             }
-            else { //TODO:prevent users from creating same id
+            else if (!checkUnique(rootGroup, groupText.getText()) || groupText.getText().equals("Root")) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please enter a unique id.");
+                alert.show();
+            }
+            else {
                 if (treeView.getSelectionModel().getSelectedItem().getValue().equals("Root")) {
                     TreeItem<String> treeItem = new TreeItem<>(groupText.getText(), new ImageView(groupIcon));
                     treeView.getSelectionModel().getSelectedItem().getChildren().add(treeItem);
@@ -90,18 +97,29 @@ public class Admin { // implements singleton design pattern
             }
         });
 
-        Button userViewButton = new Button("Open User View"); //TODO: checkUnique()
+        Button userViewButton = new Button("Open User View");
         userViewButton.setOnAction(event -> {
-            String selected = treeView.getSelectionModel().getSelectedItem().getValue();
-            if (treeView.getSelectionModel().getSelectedItem() == null || !checkUser(rootGroup, selected)) {
+            if (treeView.getSelectionModel().getSelectedItem() != null) {
+                User user = checkUser(rootGroup, treeView.getSelectionModel().getSelectedItem().getValue());
+                if(user != null) {
+                    user.render();
+                }
+                else {
+                    alert = new Alert(Alert.AlertType.ERROR, "Please select a user.");
+                    alert.show();
+                }
+            }
+            else {
                 alert = new Alert(Alert.AlertType.ERROR, "Please select a user.");
                 alert.show();
             }
+
         });
 
         Button showUserTotal = new Button("Show User Total");
         showUserTotal.setOnAction(event -> {
-            int count = getUserCount(rootGroup);
+            UserTotal visitor = new UserTotal();
+            int count = rootGroup.accept(visitor);
             alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " registered users.");
             alert.setTitle("Mini Twitter");
             alert.setHeaderText("Number of Users");
@@ -110,7 +128,8 @@ public class Admin { // implements singleton design pattern
 
         Button showGroupTotal = new Button("Show Group Total");
         showGroupTotal.setOnAction(event -> {
-            int count = getGroupCount(rootGroup);
+            GroupTotal visitor = new GroupTotal();
+            int count = rootGroup.accept(visitor) - 1;
             alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " user group(s).");
             alert.setTitle("Mini Twitter");
             alert.setHeaderText("Number of Groups");
@@ -120,10 +139,11 @@ public class Admin { // implements singleton design pattern
         Button showMessageTotal = new Button("Show Messages Total");
         showMessageTotal.setOnAction(event -> {
             MessageTotal visitor = new MessageTotal();
-            int count = 0;
-            for (TreeEntry t : rootGroup.getList()) {
-                count +=  t.accept(visitor);
-            }
+            int count = rootGroup.accept(visitor);
+            alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " messages(s).");
+            alert.setTitle("Mini Twitter");
+            alert.setHeaderText("Number of Messages");
+            alert.show();
         });
 
         Button showPositivePercentage = new Button("Show Positive Percentage");
@@ -158,7 +178,21 @@ public class Admin { // implements singleton design pattern
         return borderPane;
     }
 
-    private void findForUser(TreeView<String> treeView, TreeEntry entry, TextArea text) {
+    private boolean checkUnique(TreeEntry entry, String id) {
+        for  (TreeEntry t : ((UserGroup) entry).getList()) {
+            if (t.getId().equals(id)) {
+                return false;
+            }
+            if (t instanceof UserGroup) {
+                if (!checkUnique(t, id)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void findForUser(TreeView<String> treeView, TreeEntry entry, TextField text) {
         for (TreeEntry t : ((UserGroup) entry).getList()) {
             if (t instanceof UserGroup) {
                 if (treeView.getSelectionModel().getSelectedItem().getValue().equals(t.getId())) {
@@ -175,7 +209,7 @@ public class Admin { // implements singleton design pattern
         }
     }
 
-    private void findForGroup(TreeView<String> treeView, TreeEntry entry, TextArea text) {
+    private void findForGroup(TreeView<String> treeView, TreeEntry entry, TextField text) {
             for (TreeEntry t : ((UserGroup) entry).getList()) {
                 if (t instanceof UserGroup) {
                     if (treeView.getSelectionModel().getSelectedItem().getValue().equals(t.getId())) {
@@ -192,44 +226,22 @@ public class Admin { // implements singleton design pattern
             }
     }
 
-    private boolean checkUser(TreeEntry entry, String id) {
-       if (entry.getId().equals(id)) {
-           return entry instanceof User;
+    private User checkUser(TreeEntry entry, String id) {
+       if (entry instanceof User && entry.getId().equals(id)) {
+           return (User) entry;
        }
 
        if (entry instanceof UserGroup) {
            for (TreeEntry t : ((UserGroup) entry).getList()) {
-               if (checkUser(t, id)) {
-                   return true;
+               User user = checkUser(t, id);
+               if (user != null) {
+                   return user;
                }
            }
        }
-       return false;
+       return null;
     }
 
-    private int getUserCount(TreeEntry entry) {
-        int count = 0;
-        UserTotal visitor = new UserTotal();
-        for (TreeEntry t : ((UserGroup)entry).getList()) {
-            if (t instanceof UserGroup) {
-                count += getUserCount(t);
-            }
-            count += t.accept(visitor);
-        }
-        return count;
-    }
-
-    private int getGroupCount(TreeEntry entry) {
-        int count = 0;
-        GroupTotal visitor = new GroupTotal();
-        for (TreeEntry t : ((UserGroup)entry).getList()) {
-            if (t instanceof UserGroup) {
-                count += getGroupCount(t);
-            }
-            count += t.accept(visitor);
-        }
-        return count;
-    }
 }
 
 /*try {

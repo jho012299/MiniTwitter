@@ -31,6 +31,11 @@ public class UserGroup implements TreeEntry{
     }
 
     public int accept(StatsElementVisitor visitor) {
-        return visitor.visit(this);
+        int count = 0;
+        for (TreeEntry t : entries) {
+            count += t.accept(visitor);
+        }
+        count += visitor.visit(this);
+        return count;
     }
 }
