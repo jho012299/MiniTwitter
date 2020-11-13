@@ -15,8 +15,11 @@ public class Admin { // implements singleton design pattern
     private static Admin instance = null;
     private Image groupIcon = new Image("file:./src/icon.png");
     private Alert alert;
+    private UserGroup rootGroup;
 
-    private Admin() {}
+    private Admin() {
+        rootGroup = new UserGroup("Root");
+    }
 
     public static Admin getInstance() { // only creates instance if doesn't exist
         if (instance == null) {
@@ -29,17 +32,10 @@ public class Admin { // implements singleton design pattern
         BorderPane borderPane = new BorderPane();
 
         TreeItem<String> rootItem = new TreeItem<>("Root", new ImageView(groupIcon));
-        UserGroup rootGroup = new UserGroup("Root");
-
         TreeView<String> treeView = new TreeView<>(rootItem);
 
         TextField userText = new TextField();
-        //userText.setMaxHeight(15);
-        //userText.setMaxWidth(250);
-
         TextField groupText = new TextField();
-        //groupText.setMaxHeight(15);
-        //groupText.setMaxWidth(250);
 
         Button userButton = new Button("Add User");
         userButton.setOnAction(event -> {
@@ -140,7 +136,7 @@ public class Admin { // implements singleton design pattern
         showMessageTotal.setOnAction(event -> {
             MessageTotal visitor = new MessageTotal();
             int count = rootGroup.accept(visitor);
-            alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " messages(s).");
+            alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " message(s).");
             alert.setTitle("Mini Twitter");
             alert.setHeaderText("Number of Messages");
             alert.show();
@@ -156,17 +152,14 @@ public class Admin { // implements singleton design pattern
         HBox groupBox = new HBox();
         HBox viewBox = new HBox();
         HBox totalBox = new HBox();
-        userBox.getChildren().add(userText);
-        userBox.getChildren().add(userButton);
-        groupBox.getChildren().add(groupText);
-        groupBox.getChildren().add(groupButton);
+        HBox messageBox = new HBox();
+
+        userBox.getChildren().addAll(userText, userButton);
+        groupBox.getChildren().addAll(groupText, groupButton);
         viewBox.getChildren().add(userViewButton);
-        totalBox.getChildren().add(showUserTotal);
-        totalBox.getChildren().add(showGroupTotal);
-        vbox.getChildren().add(userBox);
-        vbox.getChildren().add(groupBox);
-        vbox.getChildren().add(viewBox);
-        vbox.getChildren().add(totalBox);
+        totalBox.getChildren().addAll(showUserTotal, showGroupTotal);
+        messageBox.getChildren().addAll(showMessageTotal);
+        vbox.getChildren().addAll(userBox, groupBox, viewBox, totalBox, messageBox);
 
         vbox.setPadding(new Insets(10, 10, 10, 10));
         userBox.setPadding(new Insets(10, 10, 10, 10));
@@ -176,6 +169,10 @@ public class Admin { // implements singleton design pattern
         borderPane.setCenter(vbox);
 
         return borderPane;
+    }
+
+    public User findUser(String id) {
+        return checkUser(rootGroup, id);
     }
 
     private boolean checkUnique(TreeEntry entry, String id) {

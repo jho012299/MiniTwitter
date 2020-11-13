@@ -12,7 +12,7 @@ public abstract class Subject {
 
     public void detach(Observer observer) {
         observers.remove(observer);
-    }
+    } // not needed
 
     public void notifyObservers() {
         for (Observer observer : observers) {
