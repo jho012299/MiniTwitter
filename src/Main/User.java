@@ -4,7 +4,6 @@ import Observer.Observer;
 import Observer.Subject;
 import Visitor.StatsElementVisitor;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -26,6 +25,10 @@ public class User extends Subject implements TreeEntry, Observer {
     private Stage stage;
     private BorderPane borderPane;
     private Alert alert;
+    private TextField userText;
+    private TextArea messageText;
+    private ListView<String> followingList;
+    private ListView<String> feedList;
 
     public User(String id) {
         this.id = id;
@@ -42,7 +45,6 @@ public class User extends Subject implements TreeEntry, Observer {
         if (user != null) {
             user.attach(this);
             following.add(id);
-            System.out.println("You are now following " + id);
         }
         else {
             alert = new Alert(Alert.AlertType.ERROR, "Cannot find user.");
@@ -74,34 +76,43 @@ public class User extends Subject implements TreeEntry, Observer {
         }
         windowOpened = true;
 
-        TextField userText = new TextField();
-        TextArea messageText = new TextArea();
+        userText = new TextField();
+        messageText = new TextArea();
         Button followButton = new Button("Follow");
         Button postButton = new Button("Post");
-        ListView<String> followingList= new ListView<>();
-        ListView<String> feedList = new ListView<>();
+        followingList= new ListView<>();
+        feedList = new ListView<>();
+
+        ObservableList<String> initializeList = FXCollections.observableArrayList(feed);
+        feedList.setItems(initializeList);
 
         followButton.setOnAction(event -> {
             if (id.equals(userText.getText())) {
                 alert = new Alert(Alert.AlertType.ERROR, "You cannot follow yourself.");
                 alert.show();
             }
+            else if(following.contains(userText.getText())) {
+                alert = new Alert(Alert.AlertType.ERROR, "You are already following this user.");
+                alert.show();
+            }
             else {
                 follow(userText.getText());
-                ObservableList<String> items = FXCollections.observableArrayList(following);
-                followingList.setItems(items);
+                ObservableList<String> followList = FXCollections.observableArrayList(following);
+                followingList.setItems(followList);
             }
+            userText.clear();
         });
 
         postButton.setOnAction(event -> {
-            post(messageText.getText());
+            if (messageText.getText().equals("")) {
+                alert = new Alert(Alert.AlertType.ERROR, "Please enter text.");
+                alert.show();
+            }
+            post(id + ": " + messageText.getText());
+            ObservableList<String> tweetList = FXCollections.observableArrayList(feed);
+            feedList.setItems(tweetList);
+            messageText.clear();
         });
-
-        following.add("Test");
-        ObservableList<String> items = FXCollections.observableArrayList(following);
-        followingList.setItems(items);
-
-        //followingList.getItems().addListener((ListChangeListener<String>) c -> followingList.setItems(items));
 
         VBox rootBox = new VBox();
         HBox followBox = new HBox();
@@ -121,6 +132,8 @@ public class User extends Subject implements TreeEntry, Observer {
     public void update(Subject subject) {
         User user = (User) subject;
         feed.add(user.getTweets().get(user.getTweets().size() - 1));
+        ObservableList<String> tweetList = FXCollections.observableArrayList(feed);
+        feedList.setItems(tweetList);
     }
 
     private void initializeStage() {

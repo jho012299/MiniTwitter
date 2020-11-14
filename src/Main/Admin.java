@@ -2,6 +2,7 @@ package Main;
 
 import Visitor.GroupTotal;
 import Visitor.MessageTotal;
+import Visitor.PositiveTotal;
 import Visitor.UserTotal;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -10,6 +11,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import java.text.DecimalFormat;
 
 public class Admin { // implements singleton design pattern
     private static Admin instance = null;
@@ -144,7 +147,16 @@ public class Admin { // implements singleton design pattern
 
         Button showPositivePercentage = new Button("Show Positive Percentage");
         showPositivePercentage.setOnAction(event -> {
-            // make MessageTotalVisitor and PositiveTotalVisitor and divide the counts
+            PositiveTotal positiveVisitor = new PositiveTotal();
+            MessageTotal messageVisitor = new MessageTotal();
+            int positiveCount = rootGroup.accept(positiveVisitor);
+            int messageCount = rootGroup.accept(messageVisitor);
+            double percentage = (double) positiveCount / messageCount;
+            DecimalFormat df = new DecimalFormat("##.##");
+            alert = new Alert(Alert.AlertType.INFORMATION, df.format(percentage * 100) + "% of messages are positive.");
+            alert.setTitle("Mini Twitter");
+            alert.setHeaderText("Positive Messages");
+            alert.show();
         });
 
         VBox vbox = new VBox();
@@ -158,7 +170,7 @@ public class Admin { // implements singleton design pattern
         groupBox.getChildren().addAll(groupText, groupButton);
         viewBox.getChildren().add(userViewButton);
         totalBox.getChildren().addAll(showUserTotal, showGroupTotal);
-        messageBox.getChildren().addAll(showMessageTotal);
+        messageBox.getChildren().addAll(showMessageTotal, showPositivePercentage);
         vbox.getChildren().addAll(userBox, groupBox, viewBox, totalBox, messageBox);
 
         vbox.setPadding(new Insets(10, 10, 10, 10));

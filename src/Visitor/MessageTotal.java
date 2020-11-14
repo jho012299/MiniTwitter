@@ -8,7 +8,7 @@ public class MessageTotal implements StatsElementVisitor {
 
     @Override
     public int visit(User user) {
-        return user.getFeed().size();
+        return user.getTweets().size();
     }
 
     @Override
