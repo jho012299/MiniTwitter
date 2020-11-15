@@ -1,12 +1,9 @@
 package Visitor;
 
-import Main.TreeEntry;
 import Main.User;
 import Main.UserGroup;
 
-import java.util.List;
-
-public class UserTotal implements StatsElementVisitor {
+public class UserTotal implements StatsElementVisitor { // increments count by 1 when visitor is user
 
     public UserTotal() {}
 

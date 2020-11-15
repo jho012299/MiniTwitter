@@ -7,7 +7,7 @@ import java.util.List;
 
 public class UserGroup implements TreeEntry{
     private String id;
-    private List<TreeEntry> entries;
+    private List<TreeEntry> entries; // UserGroup can store Users and UserGroups
 
     public UserGroup(String id) {
         this.id = id;
@@ -30,7 +30,7 @@ public class UserGroup implements TreeEntry{
         entries.add(new UserGroup(id));
     }
 
-    public int accept(StatsElementVisitor visitor) {
+    public int accept(StatsElementVisitor visitor) { // recursive method to count desired statistic
         int count = 0;
         for (TreeEntry t : entries) {
             count += t.accept(visitor);

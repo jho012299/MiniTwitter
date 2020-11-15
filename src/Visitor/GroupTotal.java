@@ -1,12 +1,9 @@
 package Visitor;
 
-import Main.TreeEntry;
 import Main.User;
 import Main.UserGroup;
 
-import java.util.List;
-
-public class GroupTotal implements StatsElementVisitor {
+public class GroupTotal implements StatsElementVisitor { // increments counter when entry is a UserGroup
 
     public GroupTotal(){ }
 

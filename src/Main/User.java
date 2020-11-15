@@ -41,7 +41,7 @@ public class User extends Subject implements TreeEntry, Observer {
         initializeStage();
     }
 
-    public void follow(String id) {
+    public void follow(String id) { // user attaches to given user id and will update when followed user updates
         Admin admin = Admin.getInstance();
         User user = admin.findUser(id);
         if (user != null) {
@@ -54,7 +54,7 @@ public class User extends Subject implements TreeEntry, Observer {
         }
     }
 
-    public void post(String message) {
+    public void post(String message) { // posts message and notifies all observers
         myTweets.add(message);
         feed.add(message);
         notifyObservers();
@@ -72,11 +72,11 @@ public class User extends Subject implements TreeEntry, Observer {
         return feed;
     }
 
-    public void render() {
+    public void render() { // populates new window with user information
         if (windowOpened) {
             return;
         }
-        windowOpened = true;
+        windowOpened = true;  // only one instance at a time
 
         userText = new TextField();
         messageText = new TextArea();
@@ -85,8 +85,10 @@ public class User extends Subject implements TreeEntry, Observer {
         followingList= new ListView<>();
         feedList = new ListView<>();
 
-        ObservableList<String> initializeList = FXCollections.observableArrayList(feed);
-        feedList.setItems(initializeList);
+        ObservableList<String> initializeFeedList = FXCollections.observableArrayList(feed); // repopulates news feed and following list after closing
+        feedList.setItems(initializeFeedList);
+        ObservableList<String> initializeFollowerList = FXCollections.observableArrayList(following);
+        followingList.setItems(initializeFollowerList);
 
         followButton.setOnAction(event -> {
             if (id.equals(userText.getText())) {
@@ -99,7 +101,7 @@ public class User extends Subject implements TreeEntry, Observer {
             }
             else {
                 follow(userText.getText());
-                ObservableList<String> followList = FXCollections.observableArrayList(following);
+                ObservableList<String> followList = FXCollections.observableArrayList(following); // updates following list after user is followed
                 followingList.setItems(followList);
             }
             userText.clear();
@@ -116,6 +118,9 @@ public class User extends Subject implements TreeEntry, Observer {
             messageText.clear();
         });
 
+        /**************************************************************************************************************
+         * UI Implementation
+         **************************************************************************************************************/
         VBox rootBox = new VBox(10);
         HBox followBox = new HBox(10);
         HBox postBox = new HBox(10);
@@ -137,20 +142,23 @@ public class User extends Subject implements TreeEntry, Observer {
         postBox.getChildren().addAll(messageText, postButton);
         borderPane.setCenter(rootBox);
         stage.show();
+        /**************************************************************************************************************
+         * UI Implementation
+         **************************************************************************************************************/
     }
 
     public int accept(StatsElementVisitor visitor) {
         return visitor.visit(this);
-    }
+    } // accepts visitor into User class
 
-    public void update(Subject subject) {
+    public void update(Subject subject) { // updates observers when tweet is posted
         User user = (User) subject;
         feed.add(user.getTweets().get(user.getTweets().size() - 1));
         ObservableList<String> tweetList = FXCollections.observableArrayList(feed);
         feedList.setItems(tweetList);
     }
 
-    private void initializeStage() {
+    private void initializeStage() { // UI initialization
         windowOpened = false;
         borderPane = new BorderPane();
         stage = new Stage();

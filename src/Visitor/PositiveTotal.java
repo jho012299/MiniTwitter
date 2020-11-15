@@ -18,7 +18,7 @@ public class PositiveTotal implements StatsElementVisitor {
         return 0;
     }
 
-    public int checkPositive(List<String> list) {
+    public int checkPositive(List<String> list) { // checks list and counts how many messages are "positive"
         int count = 0;
         for (String message : list) {
             String[] array = message.split(" ");
