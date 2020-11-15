@@ -5,6 +5,7 @@ import Visitor.MessageTotal;
 import Visitor.PositiveTotal;
 import Visitor.UserTotal;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,6 +18,7 @@ import java.text.DecimalFormat;
 public class Admin { // implements singleton design pattern
     private static Admin instance = null;
     private Image groupIcon = new Image("file:./src/icon.png");
+    private ImageView twitterBanner = new ImageView(new Image("file:./src/twitterBanner.jpg"));
     private Alert alert;
     private UserGroup rootGroup;
 
@@ -38,7 +40,9 @@ public class Admin { // implements singleton design pattern
         TreeView<String> treeView = new TreeView<>(rootItem);
 
         TextField userText = new TextField();
+        userText.setPrefWidth(350);
         TextField groupText = new TextField();
+        groupText.setPrefWidth(350);
 
         Button userButton = new Button("Add User");
         userButton.setOnAction(event -> {
@@ -159,23 +163,43 @@ public class Admin { // implements singleton design pattern
             alert.show();
         });
 
-        VBox vbox = new VBox();
-        HBox userBox = new HBox();
-        HBox groupBox = new HBox();
-        HBox viewBox = new HBox();
-        HBox totalBox = new HBox();
-        HBox messageBox = new HBox();
+        VBox vbox = new VBox(10);
+        HBox userBox = new HBox(10);
+        HBox groupBox = new HBox(10);
+        HBox viewBox = new HBox(10);
+        HBox bannerBox = new HBox(10);
+        HBox totalBox = new HBox(10);
+        HBox messageBox = new HBox(10);
 
         userBox.getChildren().addAll(userText, userButton);
         groupBox.getChildren().addAll(groupText, groupButton);
         viewBox.getChildren().add(userViewButton);
+        bannerBox.getChildren().add(twitterBanner);
         totalBox.getChildren().addAll(showUserTotal, showGroupTotal);
         messageBox.getChildren().addAll(showMessageTotal, showPositivePercentage);
-        vbox.getChildren().addAll(userBox, groupBox, viewBox, totalBox, messageBox);
+        vbox.getChildren().addAll(userBox, groupBox, viewBox, bannerBox, totalBox, messageBox);
 
-        vbox.setPadding(new Insets(10, 10, 10, 10));
-        userBox.setPadding(new Insets(10, 10, 10, 10));
-        groupBox.setPadding(new Insets(10, 10, 10, 10));
+        vbox.setPadding(new Insets(10));
+        userBox.setPadding(new Insets(10));
+        userBox.setAlignment(Pos.CENTER);
+        groupBox.setPadding(new Insets(10));
+        groupBox.setAlignment(Pos.CENTER);
+        viewBox.setPadding(new Insets(10));
+        viewBox.setAlignment(Pos.CENTER);
+        bannerBox.setPadding(new Insets(20));
+        bannerBox.setAlignment(Pos.CENTER);
+        totalBox.setPadding(new Insets(10));
+        totalBox.setAlignment(Pos.CENTER);
+        messageBox.setPadding(new Insets(10));
+        messageBox.setAlignment(Pos.CENTER);
+
+        userButton.setPrefWidth(150);
+        groupButton.setPrefWidth(150);
+        userViewButton.setPrefWidth(500);
+        showUserTotal.setPrefWidth(250);
+        showGroupTotal.setPrefWidth(250);
+        showMessageTotal.setPrefWidth(250);
+        showPositivePercentage.setPrefWidth(250);
 
         borderPane.setLeft(treeView);
         borderPane.setCenter(vbox);

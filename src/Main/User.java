@@ -5,6 +5,8 @@ import Observer.Subject;
 import Visitor.StatsElementVisitor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -114,12 +116,24 @@ public class User extends Subject implements TreeEntry, Observer {
             messageText.clear();
         });
 
-        VBox rootBox = new VBox();
-        HBox followBox = new HBox();
-        HBox postBox = new HBox();
+        VBox rootBox = new VBox(10);
+        HBox followBox = new HBox(10);
+        HBox postBox = new HBox(10);
 
-        rootBox.getChildren().addAll(followBox, followingList, postBox, feedList);
-        followBox.getChildren().addAll(userText, followButton);
+        Label followLabel = new Label("Follow User: ");
+        Label followingLabel = new Label("Following");
+        Label feedLabel = new Label("News Feed");
+
+        rootBox.setPadding(new Insets(10));
+        followBox.setPadding(new Insets(10));
+        postBox.setPadding(new Insets(10));
+
+        rootBox.setAlignment(Pos.CENTER);
+        followBox.setAlignment(Pos.CENTER);
+        postBox.setAlignment(Pos.CENTER);
+
+        rootBox.getChildren().addAll(followBox, followingLabel, followingList, feedLabel, feedList, postBox);
+        followBox.getChildren().addAll(followLabel, userText, followButton);
         postBox.getChildren().addAll(messageText, postButton);
         borderPane.setCenter(rootBox);
         stage.show();
