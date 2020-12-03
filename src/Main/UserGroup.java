@@ -30,12 +30,10 @@ public class UserGroup implements TreeEntry{
         entries.add(new UserGroup(id));
     }
 
-    public int accept(StatsElementVisitor visitor) { // recursive method to count desired statistic
-        int count = 0;
+    public void accept(StatsElementVisitor visitor) { // recursive method to visit each tree entry
         for (TreeEntry t : entries) {
-            count += t.accept(visitor);
+            t.accept(visitor);
         }
-        count += visitor.visit(this);
-        return count;
+        visitor.visit(this);
     }
 }

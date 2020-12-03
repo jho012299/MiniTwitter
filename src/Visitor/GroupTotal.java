@@ -4,16 +4,23 @@ import Main.User;
 import Main.UserGroup;
 
 public class GroupTotal implements StatsElementVisitor { // increments counter when entry is a UserGroup
+    private int counter;
 
-    public GroupTotal(){ }
-
-    @Override
-    public int visit(User user) { // not counting users
-        return 0;
+    public GroupTotal(){
+        counter = 0;
     }
 
     @Override
-    public int visit(UserGroup userGroup) {
-       return 1;
+    public void visit(User user) { // not counting users
+        // Not incremented
+    }
+
+    @Override
+    public void visit(UserGroup userGroup) {
+       counter++;
+    }
+
+    public int getCounter() {
+        return counter;
     }
 }

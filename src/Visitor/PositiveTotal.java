@@ -6,16 +6,20 @@ import Main.UserGroup;
 import java.util.List;
 
 public class PositiveTotal implements StatsElementVisitor {
-    public PositiveTotal(){}
+    private int counter;
 
-    @Override
-    public int visit(User user) {
-        return checkPositive(user.getTweets());
+    public PositiveTotal(){
+        counter = 0;
     }
 
     @Override
-    public int visit(UserGroup userGroup) {
-        return 0;
+    public void visit(User user) {
+        counter = counter + checkPositive(user.getTweets());
+    }
+
+    @Override
+    public void visit(UserGroup userGroup) {
+        // Nothing added
     }
 
     public int checkPositive(List<String> list) { // checks list and counts how many messages are "positive"
@@ -30,5 +34,9 @@ public class PositiveTotal implements StatsElementVisitor {
             }
         }
         return count;
+    }
+
+    public int getCounter() {
+        return counter;
     }
 }

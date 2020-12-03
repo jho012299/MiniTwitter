@@ -23,7 +23,12 @@ public class User extends Subject implements TreeEntry, Observer {
     private List<String> following;
     private List<String> myTweets;
     private List<String> feed;
+    private long creationTime;
+    private long updateTime;
+
     private boolean windowOpened;
+
+
     private Stage stage;
     private BorderPane borderPane;
     private Alert alert;
@@ -38,6 +43,8 @@ public class User extends Subject implements TreeEntry, Observer {
         following = new ArrayList<>();
         myTweets = new ArrayList<>();
         feed = new ArrayList<>();
+        creationTime = System.currentTimeMillis();
+        updateTime = System.currentTimeMillis();
         initializeStage();
     }
 
@@ -57,6 +64,7 @@ public class User extends Subject implements TreeEntry, Observer {
     public void post(String message) { // posts message and notifies all observers
         myTweets.add(message);
         feed.add(message);
+        updateTime = System.currentTimeMillis();
         notifyObservers();
     }
 
@@ -71,6 +79,8 @@ public class User extends Subject implements TreeEntry, Observer {
     public List<String> getFeed() {
         return feed;
     }
+
+    public long getUpdateTime() { return updateTime; }
 
     public void render() { // populates new window with user information
         if (windowOpened) {
@@ -107,7 +117,7 @@ public class User extends Subject implements TreeEntry, Observer {
             userText.clear();
         });
 
-        postButton.setOnAction(event -> {
+        postButton.setOnAction(event -> { // posts message to news feed
             if (messageText.getText().equals("")) {
                 alert = new Alert(Alert.AlertType.ERROR, "Please enter text.");
                 alert.show();
@@ -124,22 +134,27 @@ public class User extends Subject implements TreeEntry, Observer {
         VBox rootBox = new VBox(10);
         HBox followBox = new HBox(10);
         HBox postBox = new HBox(10);
+        HBox timeBox = new HBox(10);
 
         Label followLabel = new Label("Follow User: ");
         Label followingLabel = new Label("Following");
         Label feedLabel = new Label("News Feed");
+        Label timeLabel = new Label("Account created: " + creationTime);
+        Label updateLabel = new Label("Last updated: " + updateTime);
 
         rootBox.setPadding(new Insets(10));
         followBox.setPadding(new Insets(10));
         postBox.setPadding(new Insets(10));
+        timeBox.setPadding(new Insets(10));
 
         rootBox.setAlignment(Pos.CENTER);
         followBox.setAlignment(Pos.CENTER);
         postBox.setAlignment(Pos.CENTER);
 
-        rootBox.getChildren().addAll(followBox, followingLabel, followingList, feedLabel, feedList, postBox);
+        rootBox.getChildren().addAll(followBox, followingLabel, followingList, feedLabel, feedList, postBox, timeBox);
         followBox.getChildren().addAll(followLabel, userText, followButton);
         postBox.getChildren().addAll(messageText, postButton);
+        timeBox.getChildren().addAll(timeLabel, updateLabel);
         borderPane.setCenter(rootBox);
         stage.show();
         /**************************************************************************************************************
@@ -147,8 +162,8 @@ public class User extends Subject implements TreeEntry, Observer {
          **************************************************************************************************************/
     }
 
-    public int accept(StatsElementVisitor visitor) {
-        return visitor.visit(this);
+    public void accept(StatsElementVisitor visitor) {
+        visitor.visit(this);
     } // accepts visitor into User class
 
     public void update(Subject subject) { // updates observers when tweet is posted

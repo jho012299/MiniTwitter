@@ -1,9 +1,6 @@
 package Main;
 
-import Visitor.GroupTotal;
-import Visitor.MessageTotal;
-import Visitor.PositiveTotal;
-import Visitor.UserTotal;
+import Visitor.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -122,7 +119,8 @@ public class Admin { // implements singleton design pattern
         Button showUserTotal = new Button("Show User Total"); // shows an alert with number of users
         showUserTotal.setOnAction(event -> {
             UserTotal visitor = new UserTotal();
-            int count = rootGroup.accept(visitor);
+            rootGroup.accept(visitor);
+            int count = visitor.getCounter();
             alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " registered users.");
             alert.setTitle("Mini Twitter");
             alert.setHeaderText("Number of Users");
@@ -132,7 +130,8 @@ public class Admin { // implements singleton design pattern
         Button showGroupTotal = new Button("Show Group Total"); // shows an alert with number of groups
         showGroupTotal.setOnAction(event -> {
             GroupTotal visitor = new GroupTotal();
-            int count = rootGroup.accept(visitor) - 1;
+            rootGroup.accept(visitor);
+            int count = visitor.getCounter() - 1;
             alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " user group(s).");
             alert.setTitle("Mini Twitter");
             alert.setHeaderText("Number of Groups");
@@ -142,7 +141,8 @@ public class Admin { // implements singleton design pattern
         Button showMessageTotal = new Button("Show Messages Total"); // shows an alert with number of messages
         showMessageTotal.setOnAction(event -> {
             MessageTotal visitor = new MessageTotal();
-            int count = rootGroup.accept(visitor);
+            rootGroup.accept(visitor);
+            int count = visitor.getCounter();
             alert = new Alert(Alert.AlertType.INFORMATION, "There are currently " + count + " message(s).");
             alert.setTitle("Mini Twitter");
             alert.setHeaderText("Number of Messages");
@@ -153,13 +153,38 @@ public class Admin { // implements singleton design pattern
         showPositivePercentage.setOnAction(event -> {
             PositiveTotal positiveVisitor = new PositiveTotal();
             MessageTotal messageVisitor = new MessageTotal();
-            int positiveCount = rootGroup.accept(positiveVisitor);
-            int messageCount = rootGroup.accept(messageVisitor);
-            double percentage = (double) positiveCount / messageCount;
-            DecimalFormat df = new DecimalFormat("##.##");
-            alert = new Alert(Alert.AlertType.INFORMATION, df.format(percentage * 100) + "% of messages are positive.");
+            rootGroup.accept(positiveVisitor);
+            rootGroup.accept(messageVisitor);
+            int positiveCount = positiveVisitor.getCounter();
+            int messageCount = messageVisitor.getCounter();
+
+            if (messageCount == 0) {
+                alert = new Alert(Alert.AlertType.ERROR, "There are currently no messages.");
+            }
+            else {
+                double percentage = (double) positiveCount / messageCount;
+                DecimalFormat df = new DecimalFormat("##.##");
+                alert = new Alert(Alert.AlertType.INFORMATION, df.format(percentage * 100) + "% of messages are positive.");
+            }
             alert.setTitle("Mini Twitter");
             alert.setHeaderText("Positive Messages");
+            alert.show();
+        });
+
+        Button showRecentlyUpdated = new Button("Show Most Recently Updated"); // Shows most recently updated user (including account creation)
+        showRecentlyUpdated.setOnAction(event -> {
+            LastUpdated visitor = new LastUpdated();
+            rootGroup.accept(visitor);
+            User user = visitor.getUser();
+
+            if (user == null) {
+                alert = new Alert(Alert.AlertType.INFORMATION, "No currently registered users.");
+            }
+            else {
+                alert = new Alert(Alert.AlertType.INFORMATION, "The last updated user is: " + user.getId());
+            }
+            alert.setTitle("Mini Twitter");
+            alert.setHeaderText("Last Updated User");
             alert.show();
         });
 
@@ -173,6 +198,7 @@ public class Admin { // implements singleton design pattern
         HBox bannerBox = new HBox(10);
         HBox totalBox = new HBox(10);
         HBox messageBox = new HBox(10);
+        HBox updateBox = new HBox(10);
 
         userBox.getChildren().addAll(userText, userButton);
         groupBox.getChildren().addAll(groupText, groupButton);
@@ -180,21 +206,24 @@ public class Admin { // implements singleton design pattern
         bannerBox.getChildren().add(twitterBanner);
         totalBox.getChildren().addAll(showUserTotal, showGroupTotal);
         messageBox.getChildren().addAll(showMessageTotal, showPositivePercentage);
-        vbox.getChildren().addAll(userBox, groupBox, viewBox, bannerBox, totalBox, messageBox);
+        updateBox.getChildren().add(showRecentlyUpdated);
+        vbox.getChildren().addAll(userBox, groupBox, viewBox, bannerBox, totalBox, messageBox, updateBox);
 
-        vbox.setPadding(new Insets(10));
-        userBox.setPadding(new Insets(10));
+        vbox.setPadding(new Insets(5, 10, 5, 10));
+        userBox.setPadding(new Insets(5, 10, 5, 10));
         userBox.setAlignment(Pos.CENTER);
-        groupBox.setPadding(new Insets(10));
+        groupBox.setPadding(new Insets(5, 10, 5, 10));
         groupBox.setAlignment(Pos.CENTER);
-        viewBox.setPadding(new Insets(10));
+        viewBox.setPadding(new Insets(5, 10, 5, 10));
         viewBox.setAlignment(Pos.CENTER);
-        bannerBox.setPadding(new Insets(20));
+        bannerBox.setPadding(new Insets(5, 10, 5, 10));
         bannerBox.setAlignment(Pos.CENTER);
         totalBox.setPadding(new Insets(10));
         totalBox.setAlignment(Pos.CENTER);
         messageBox.setPadding(new Insets(10));
         messageBox.setAlignment(Pos.CENTER);
+        updateBox.setPadding(new Insets(10));
+        updateBox.setAlignment(Pos.CENTER);
 
         userButton.setPrefWidth(150);
         groupButton.setPrefWidth(150);
@@ -203,6 +232,7 @@ public class Admin { // implements singleton design pattern
         showGroupTotal.setPrefWidth(250);
         showMessageTotal.setPrefWidth(250);
         showPositivePercentage.setPrefWidth(250);
+        showRecentlyUpdated.setPrefWidth(250);
 
         borderPane.setLeft(treeView);
         borderPane.setCenter(vbox);
@@ -281,5 +311,4 @@ public class Admin { // implements singleton design pattern
        }
        return null;
     }
-
 }

@@ -3,16 +3,23 @@ import Main.User;
 import Main.UserGroup;
 
 public class MessageTotal implements StatsElementVisitor {
-    public MessageTotal(){}
+    private int counter;
 
-
-    @Override
-    public int visit(User user) {
-        return user.getTweets().size(); // returns only user's own tweet count
+    public MessageTotal(){
+        counter = 0;
     }
 
     @Override
-    public int visit(UserGroup userGroup) {
-        return 0;
+    public void visit(User user) {
+        counter = counter + user.getTweets().size(); // returns only user's own tweet count
+    }
+
+    @Override
+    public void visit(UserGroup userGroup) {
+        // Nothing added
+    }
+
+    public int getCounter() {
+        return counter;
     }
 }
