@@ -188,6 +188,21 @@ public class Admin { // implements singleton design pattern
             alert.show();
         });
 
+        Button showValidity = new Button("Show ID Validity"); // Shows if any user or group has an invalid id
+        showValidity.setOnAction(event -> {
+            CheckValid visitor = new CheckValid();
+            rootGroup.accept(visitor);
+            if (!visitor.getValidity()) {
+                alert = new Alert(Alert.AlertType.INFORMATION, "There are users/groups with invalid usernames. ");
+            }
+            else {
+                alert = new Alert(Alert.AlertType.INFORMATION, "All users/groups have valid usernames. ");
+            }
+            alert.setTitle("Mini Twitter");
+            alert.setHeaderText("Valid Users");
+            alert.show();
+        });
+
         /**************************************************************************************************************
          * UI Implementation
          **************************************************************************************************************/
@@ -206,7 +221,7 @@ public class Admin { // implements singleton design pattern
         bannerBox.getChildren().add(twitterBanner);
         totalBox.getChildren().addAll(showUserTotal, showGroupTotal);
         messageBox.getChildren().addAll(showMessageTotal, showPositivePercentage);
-        updateBox.getChildren().add(showRecentlyUpdated);
+        updateBox.getChildren().addAll(showRecentlyUpdated, showValidity);
         vbox.getChildren().addAll(userBox, groupBox, viewBox, bannerBox, totalBox, messageBox, updateBox);
 
         vbox.setPadding(new Insets(5, 10, 5, 10));
@@ -233,6 +248,7 @@ public class Admin { // implements singleton design pattern
         showMessageTotal.setPrefWidth(250);
         showPositivePercentage.setPrefWidth(250);
         showRecentlyUpdated.setPrefWidth(250);
+        showValidity.setPrefWidth(250);
 
         borderPane.setLeft(treeView);
         borderPane.setCenter(vbox);
