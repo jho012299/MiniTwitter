@@ -36,6 +36,7 @@ public class User extends Subject implements TreeEntry, Observer {
     private TextArea messageText;
     private ListView<String> followingList;
     private ListView<String> feedList;
+    Label updateLabel;
 
     public User(String id) {
         this.id = id;
@@ -45,6 +46,7 @@ public class User extends Subject implements TreeEntry, Observer {
         feed = new ArrayList<>();
         creationTime = System.currentTimeMillis();
         updateTime = System.currentTimeMillis();
+        updateLabel = new Label("Last updated: " + updateTime);
         initializeStage();
     }
 
@@ -65,6 +67,7 @@ public class User extends Subject implements TreeEntry, Observer {
         myTweets.add(message);
         feed.add(message);
         updateTime = System.currentTimeMillis();
+        updateLabel.setText("Last Updated: " + updateTime);
         notifyObservers();
     }
 
@@ -140,7 +143,6 @@ public class User extends Subject implements TreeEntry, Observer {
         Label followingLabel = new Label("Following");
         Label feedLabel = new Label("News Feed");
         Label timeLabel = new Label("Account created: " + creationTime);
-        Label updateLabel = new Label("Last updated: " + updateTime);
 
         rootBox.setPadding(new Insets(10));
         followBox.setPadding(new Insets(10));
